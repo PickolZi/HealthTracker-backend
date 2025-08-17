@@ -1,7 +1,7 @@
 package dev.jamesdsan.backend.service;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import dev.jamesdsan.backend.dto.UserResponse;
 import dev.jamesdsan.backend.entity.User;
 import dev.jamesdsan.backend.repository.UserRepository;
+import dev.jamesdsan.utils.Constants.Providers;
+import dev.jamesdsan.utils.Constants.Roles;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +48,16 @@ public class UserService {
                 || Strings.isBlank(user.getEmail())) {
             throw new ValidationException("User could not be null");
         }
+
+        if (Strings.isBlank(user.getRole())) {
+            user.setRole(Roles.USER);
+        }
+
+        if (Strings.isBlank(user.getProvider())) {
+            user.setProvider(Providers.LOCAL);
+        }
+        user.setCreatedAt(Instant.now());
+
         userRepository.save(user);
     }
 

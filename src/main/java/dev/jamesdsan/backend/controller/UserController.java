@@ -1,5 +1,6 @@
 package dev.jamesdsan.backend.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +27,11 @@ public class UserController {
     @GetMapping("")
     public List<UserResponse> getUsers() {
         return userService.listUsers();
+    }
+
+    @RequestMapping("/me")
+    public Principal getCurrentUser(Principal user) {
+        return user;
     }
 
     @GetMapping("/{userId}")

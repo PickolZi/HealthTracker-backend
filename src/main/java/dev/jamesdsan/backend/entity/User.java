@@ -1,5 +1,7 @@
 package dev.jamesdsan.backend.entity;
 
+import java.time.Instant;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +24,14 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
-    
+
+    private String provider;
+    private String providerId;
+
     @Column(nullable = false)
     private String role;
+
+    @Column(nullable = false)
+    private Instant createdAt;
 }
