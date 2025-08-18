@@ -1,7 +1,5 @@
 package dev.jamesdsan.backend.service;
 
-import java.time.Instant;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -35,7 +33,6 @@ public class CustomOidcUserService extends OidcUserService {
             user.setProvider(Providers.GOOGLE);
             user.setProviderId(providerId);
             user.setRole(Roles.USER);
-            user.setCreatedAt(Instant.now());
         }
 
         // Update these values in case they updated it through their google profile

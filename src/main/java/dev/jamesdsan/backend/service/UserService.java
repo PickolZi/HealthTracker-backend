@@ -1,6 +1,5 @@
 package dev.jamesdsan.backend.service;
 
-import java.time.Instant;
 import java.util.List;
 
 import org.apache.logging.log4j.util.Strings;
@@ -56,7 +55,6 @@ public class UserService {
         if (Strings.isBlank(user.getProvider())) {
             user.setProvider(Providers.LOCAL);
         }
-        user.setCreatedAt(Instant.now());
 
         userRepository.save(user);
     }
