@@ -1,4 +1,4 @@
-package dev.jamesdsan.utils.Constants;
+package dev.jamesdsan.backend.utils.Constants;
 
 public class Roles {
     public final static String USER = "USER";
