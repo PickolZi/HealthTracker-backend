@@ -1,4 +1,4 @@
-package dev.jamesdsan.utils.Constants;
+package dev.jamesdsan.backend.utils.Constants;
 
 public class Providers {
     public final static String LOCAL = "LOCAL";

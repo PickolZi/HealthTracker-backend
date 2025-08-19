@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import dev.jamesdsan.backend.dto.UserResponse;
 import dev.jamesdsan.backend.entity.User;
 import dev.jamesdsan.backend.repository.UserRepository;
-import dev.jamesdsan.utils.Constants.Providers;
-import dev.jamesdsan.utils.Constants.Roles;
+import dev.jamesdsan.backend.utils.Constants.Providers;
+import dev.jamesdsan.backend.utils.Constants.Roles;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 
