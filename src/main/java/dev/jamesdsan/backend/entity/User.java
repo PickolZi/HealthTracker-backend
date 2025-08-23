@@ -21,7 +21,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
@@ -38,5 +38,17 @@ public class User {
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
+    }
+
+    public User merge(User other) {
+        // Overwrites the current object with the User passed into merge()
+        if (other.getUsername() != null)
+            this.setUsername(other.getUsername());
+        if (other.getEmail() != null)
+            this.setEmail(other.getEmail());
+        if (other.getPassword() != null)
+            this.setPassword(other.getPassword());
+
+        return this;
     }
 }
