@@ -128,7 +128,7 @@ public class UserService {
             userRepository.delete(user);
             logger.info("[UserService] successfully deleted user with id: {}", user.getId());
         } catch (Exception exc) {
-            logger.info("[UserService] failed to delete user with id: {}", user.getId());
+            logger.error("[UserService] failed to delete user with id: {}", user.getId());
             throw exc;
         }
     }
@@ -140,6 +140,7 @@ public class UserService {
             throw new UserNotFoundException(userId);
         }
 
+        logger.info("[UserService] successfully found user with id: {}", userId);
         return user;
     }
 
