@@ -29,4 +29,13 @@ public class Workout {
     @JsonIgnore
     @JoinTable(name = "workout_musclegroup", joinColumns = @JoinColumn(name = "workout_id"), inverseJoinColumns = @JoinColumn(name = "musclegroup_id"))
     private Set<MuscleGroup> muscleGroups = new HashSet<>();
+
+    public Workout merge(Workout other) {
+        if (other.getName() != null)
+            this.setName(other.getName());
+        if (other.getDescription() != null)
+            this.setDescription(other.getDescription());
+
+        return this;
+    }
 }
