@@ -27,4 +27,11 @@ public class MuscleGroup {
     @ManyToMany(mappedBy = "muscleGroups", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JsonIgnore
     private Set<Workout> workouts = new HashSet<>();
+
+    public MuscleGroup merge(MuscleGroup other) {
+        if (other.getName() != null)
+            this.setName(other.getName());
+
+        return this;
+    }
 }
