@@ -1,5 +1,7 @@
 package dev.jamesdsan.backend.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -15,6 +17,7 @@ import dev.jamesdsan.backend.utils.Constants.Roles;
 
 @Service
 public class CustomOidcUserService extends OidcUserService {
+    private static final Logger logger = LoggerFactory.getLogger(CustomOidcUserService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -24,9 +27,9 @@ public class CustomOidcUserService extends OidcUserService {
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
+        logger.info("[CustomOidcUserService] user has signed in through OAuth");
         // This method is ran when the user finishes OAuth authentication and is
-        // redirected back
-        // to /login/oauth2/code/google.
+        // redirected back to /login/oauth2/code/google.
         validateGoogleToken(userRequest);
 
         OidcUser oAuth2User = super.loadUser(userRequest);
@@ -34,10 +37,12 @@ public class CustomOidcUserService extends OidcUserService {
         String providerId = oAuth2User.getAttribute("sub");
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
+        logger.info("[CustomOidcUserService] user with email: {} is signing in through OAuth", email);
 
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            // Will run if the user is signing up for the first time through Google
+            logger.info(
+                    "[CustomOidcUserService] user is registering through google for the first time");
             user = new User();
             user.setProvider(Providers.GOOGLE);
             user.setProviderId(providerId);
@@ -48,8 +53,14 @@ public class CustomOidcUserService extends OidcUserService {
         user.setEmail(email);
         user.setUsername(name);
 
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception exc) {
+            logger.error("[CustomOidcUserService] failed to login through OAuth. Not saving/updating user in database");
+            throw exc;
+        }
 
+        logger.info("[CustomOidcUserService] user register/login with oauth successfully saved/updated to database");
         return oAuth2User;
     }
 
