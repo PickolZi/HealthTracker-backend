@@ -115,7 +115,6 @@ public class MuscleGroupService {
     }
 
     private MuscleGroup findMuscleGroupByIdElseThrowMuscleGroupNotFoundException(long muscleGroupId) {
-        logger.info("[MuscleGroupService] fetching muscle group with id: {}", muscleGroupId);
         MuscleGroup muscleGroup = muscleGroupRepository.findById(muscleGroupId).orElse(null);
 
         if (muscleGroup == null) {
