@@ -38,4 +38,19 @@ public class WorkoutEntry {
     protected void onCreate() {
         createdAt = Instant.now();
     }
+
+    public WorkoutEntry merge(WorkoutEntry other) {
+        if (other.getWorkout() != null)
+            this.setWorkout(other.getWorkout());
+        if (other.getSets() != null)
+            this.setSets(other.getSets());
+        if (other.getReps() != null)
+            this.setReps(other.getReps());
+        if (other.getWeight() != null)
+            this.setWeight(other.getWeight());
+        if (other.getDuration() != null)
+            this.setDuration(other.getDuration());
+
+        return this;
+    }
 }

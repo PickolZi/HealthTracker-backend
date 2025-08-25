@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import dev.jamesdsan.backend.exception.MuscleGroupNotFoundException;
 import dev.jamesdsan.backend.exception.UserNotFoundException;
+import dev.jamesdsan.backend.exception.WorkoutEntryNotFoundException;
 import dev.jamesdsan.backend.exception.WorkoutMuscleGroupNotFoundException;
 import dev.jamesdsan.backend.exception.WorkoutNotFoundException;
 import jakarta.validation.ValidationException;
@@ -40,6 +41,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WorkoutMuscleGroupNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleWorkoutMuscleGroupNotFound(
             WorkoutMuscleGroupNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(WorkoutEntryNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleWorkoutEntryNotFound(
+            WorkoutEntryNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ex.getMessage()));
