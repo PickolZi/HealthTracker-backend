@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +23,16 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
+    @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private final AuthenticatedUserService authenticatedUserService;
 
     public List<UserResponse> listUsers() {
         logger.info("[UserService] fetching list of users");
+
+        logger.info("[jamesxx] authenticatedUserService - {}", authenticatedUserService.getCurrentUser());
 
         List<UserResponse> users = userRepository.findAll()
                 .stream()
@@ -44,6 +51,8 @@ public class UserService {
 
     public UserResponse getUser(long userId) {
         logger.info("[UserService] fetching user with id: {}", userId);
+
+        authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
 
         User user = findUserByIdOrThrowUserNotFoundException(userId);
 
@@ -95,6 +104,8 @@ public class UserService {
     public void updateUser(long userId, User user) {
         logger.info("[UserService] updating user with id: {}", userId);
 
+        authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
+
         User curUser = findUserByIdOrThrowUserNotFoundException(userId);
 
         if (user == null) {
@@ -120,6 +131,8 @@ public class UserService {
 
     public void deleteUser(long userId) {
         logger.info("[UserService] attempting to delete user with id: {}", userId);
+
+        authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
 
         User user = findUserByIdOrThrowUserNotFoundException(userId);
 

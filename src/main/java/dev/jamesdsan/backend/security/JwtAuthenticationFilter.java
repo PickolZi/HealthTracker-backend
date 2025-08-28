@@ -44,6 +44,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (jwt != null && jwtUtil.isTokenValid(jwt)) {
             setSecurityContextHolderAuthentication(jwt);
+        } else {
+            logger.error("[JwtAuthenticationFilter] failed to find or validate jwt cookie: {}", jwt);
         }
 
         logger.info("[JwtAuthenticationFilter] end of check for jwt");
