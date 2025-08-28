@@ -1,6 +1,7 @@
 package dev.jamesdsan.backend.config;
 
 import dev.jamesdsan.backend.handler.CustomAuthenticationSuccessHandler;
+import dev.jamesdsan.backend.security.JwtAuthenticationFilter;
 import dev.jamesdsan.backend.service.CustomOidcUserService;
 
 import org.slf4j.Logger;
@@ -10,7 +11,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -27,11 +30,13 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter)
+			throws Exception {
 		logger.info("[SecurityConfig] initializing securityFilterChain");
 
 		http
 				.csrf(csrf -> csrf.disable())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/", "/error", "/login").permitAll()
 						.anyRequest().authenticated())
@@ -39,6 +44,8 @@ public class SecurityConfig {
 						.userInfoEndpoint(userInfo -> userInfo
 								.oidcUserService(customOAuth2UserService))
 						.successHandler(customAuthenticationSuccessHandler))
+				.logout(logout -> logout.deleteCookies("jwt"))
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.httpBasic(Customizer.withDefaults());
 		return http.build();
 	}
