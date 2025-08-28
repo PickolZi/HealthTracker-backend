@@ -2,6 +2,7 @@ package dev.jamesdsan.backend.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import dev.jamesdsan.backend.dto.WorkoutEntryResponse;
 import dev.jamesdsan.backend.dto.requests.WorkoutEntryRequest;
+import dev.jamesdsan.backend.service.AuthenticatedUserService;
 import dev.jamesdsan.backend.service.WorkoutEntryService;
 import lombok.RequiredArgsConstructor;
 
@@ -21,22 +23,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorkoutEntryController {
 
+    @Autowired
     private final WorkoutEntryService workoutEntryService;
+
+    @Autowired
+    private final AuthenticatedUserService authenticatedUserService;
 
     @GetMapping("")
     public List<WorkoutEntryResponse> getWorkoutEntrys() {
-        return workoutEntryService.listWorkoutEntriesByUser(11L);
+        return workoutEntryService.listWorkoutEntriesByUser(
+                authenticatedUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/{workoutEntryId}")
     public WorkoutEntryResponse getWorkoutEntry(@PathVariable Long workoutEntryId) {
-        return workoutEntryService.getWorkoutEntryByUser(11L, workoutEntryId);
+        return workoutEntryService.getWorkoutEntryByUser(
+                authenticatedUserService.getCurrentUser().getId(),
+                workoutEntryId);
     }
 
     @PostMapping("")
     public void createWorkoutEntry(@RequestBody WorkoutEntryRequest workoutEntryRequest) {
         workoutEntryService.createWorkoutEntry(
-                11L,
+                authenticatedUserService.getCurrentUser().getId(),
                 workoutEntryRequest.getWorkoutId(),
                 workoutEntryRequest.getWorkoutEntry());
     }
@@ -45,7 +54,7 @@ public class WorkoutEntryController {
     public void updateWorkoutEntry(@PathVariable long workoutEntryId,
             @RequestBody WorkoutEntryRequest workoutEntryRequest) {
         workoutEntryService.updateWorkoutEntry(
-                11L,
+                authenticatedUserService.getCurrentUser().getId(),
                 workoutEntryRequest.getWorkoutId(),
                 workoutEntryId,
                 workoutEntryRequest.getWorkoutEntry());
@@ -53,6 +62,8 @@ public class WorkoutEntryController {
 
     @DeleteMapping("/{workoutEntryId}")
     public void deleteWorkoutEntry(@PathVariable Long workoutEntryId) {
-        workoutEntryService.deleteWorkoutEntry(11L, workoutEntryId);
+        workoutEntryService.deleteWorkoutEntry(
+                authenticatedUserService.getCurrentUser().getId(),
+                workoutEntryId);
     }
 }

@@ -32,8 +32,6 @@ public class UserService {
     public List<UserResponse> listUsers() {
         logger.info("[UserService] fetching list of users");
 
-        logger.info("[jamesxx] authenticatedUserService - {}", authenticatedUserService.getCurrentUser());
-
         List<UserResponse> users = userRepository.findAll()
                 .stream()
                 .map(user -> UserResponse.builder()

@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import dev.jamesdsan.backend.dto.WorkoutEntryResponse;
@@ -34,14 +35,21 @@ public class WorkoutEntryService {
     @Autowired
     private final WorkoutEntryRepository workoutEntryRepository;
 
+    @Autowired
+    private final AuthenticatedUserService authenticatedUserService;
+
     public List<WorkoutEntryResponse> listWorkoutEntriesByUser(long userId) {
         logger.info("[WorkoutEntryService] listing workouts for user with id: {}", userId);
+
+        authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
+
         User user = findUserByIdElseThrowUserNotFoundException(userId);
 
         List<WorkoutEntryResponse> workoutEntries = workoutEntryRepository.findAllByUser(user)
                 .stream()
                 .map(workoutEntry -> {
                     return WorkoutEntryResponse.builder()
+                            .id(workoutEntry.getId())
                             .workoutName(workoutEntry.getWorkout().getName())
                             .workoutDescription(workoutEntry.getWorkout().getDescription())
                             .sets(workoutEntry.getSets())
@@ -62,11 +70,16 @@ public class WorkoutEntryService {
     public WorkoutEntryResponse getWorkoutEntryByUser(long userId, long workoutEntryId) {
         logger.info("[WorkoutEntryService] getting workout entry with id: {} for user with id: {}", workoutEntryId,
                 userId);
-        // TODO: Validation to ensure workoutEntry user is same as user.
+
+        authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
+
         User user = findUserByIdElseThrowUserNotFoundException(userId);
         WorkoutEntry workoutEntry = findWorkoutEntryByIdElseThrowWorkoutNotFoundException(workoutEntryId);
 
+        isUserAuthorizedToAccessWorkoutEntryElseThrowAccessDeniedException(user, workoutEntry);
+
         WorkoutEntryResponse workoutEntryResponse = WorkoutEntryResponse.builder()
+                .id(workoutEntry.getId())
                 .workoutName(workoutEntry.getWorkout().getName())
                 .workoutDescription(workoutEntry.getWorkout().getDescription())
                 .sets(workoutEntry.getSets())
@@ -84,6 +97,9 @@ public class WorkoutEntryService {
     public void createWorkoutEntry(long userId, long workoutId, WorkoutEntry workoutEntry) {
         logger.info("[WorkoutEntryService] creating workout entry for workout id: {} for user with id: {}", workoutId,
                 userId);
+
+        authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
+
         User user = findUserByIdElseThrowUserNotFoundException(userId);
         Workout workout = getWorkoutByIdElseThrowWorkoutNotFoundException(workoutId);
 
@@ -106,9 +122,13 @@ public class WorkoutEntryService {
     public void updateWorkoutEntry(long userId, long workoutId, long workoutEntryId, WorkoutEntry workoutEntry) {
         logger.info("[WorkoutEntryService] updating workout entry");
 
+        authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
+
         User user = findUserByIdElseThrowUserNotFoundException(userId);
         Workout workout = getWorkoutByIdElseThrowWorkoutNotFoundException(workoutId);
         WorkoutEntry originalWorkoutEntry = findWorkoutEntryByIdElseThrowWorkoutNotFoundException(workoutEntryId);
+
+        isUserAuthorizedToAccessWorkoutEntryElseThrowAccessDeniedException(user, originalWorkoutEntry);
 
         if (!originalWorkoutEntry.getUser().getId().equals(userId)) {
             logger.error(
@@ -136,8 +156,12 @@ public class WorkoutEntryService {
     public void deleteWorkoutEntry(long userId, long workoutEntryId) {
         logger.info("[WorkoutEntryService] deleting workout entry with id: {}", workoutEntryId);
 
+        authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
+
         User user = findUserByIdElseThrowUserNotFoundException(userId);
         WorkoutEntry workoutEntry = findWorkoutEntryByIdElseThrowWorkoutNotFoundException(workoutEntryId);
+
+        isUserAuthorizedToAccessWorkoutEntryElseThrowAccessDeniedException(user, workoutEntry);
 
         if (!workoutEntry.getUser().getId().equals(userId)) {
             logger.error(
@@ -213,5 +237,35 @@ public class WorkoutEntryService {
 
         logger.info("[WorkoutEntryService] successfully found workout entry with id: {}", workoutEntryId);
         return workoutEntry;
+    }
+
+    private void isUserAuthorizedToAccessWorkoutEntryElseThrowAccessDeniedException(User user,
+            WorkoutEntry workoutEntry) {
+
+        if (user == null ||
+                workoutEntry == null ||
+                workoutEntry.getUser() == null) {
+            logger.error(
+                    "[WorkoutEntryService] failed to access workout entry with id because of bad user: {} or bad workout entry passed: {}",
+                    user,
+                    workoutEntry);
+
+            throw new AccessDeniedException(
+                    String.format("User does not have access to this workout entry"));
+        }
+
+        if (workoutEntry.getUser().getId() != user.getId()) {
+            logger.error(
+                    "[WorkoutEntryService] failed to access workout entry with id: {} through user with id: {} because the owner of the workout entry has id: {}",
+                    workoutEntry.getId(),
+                    user.getId(),
+                    workoutEntry.getUser().getId());
+
+            throw new AccessDeniedException(
+                    String.format(
+                            "User with id: %d does not have access to workout entry with id: %d",
+                            user.getId(),
+                            workoutEntry.getId()));
+        }
     }
 }

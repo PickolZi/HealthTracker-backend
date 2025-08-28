@@ -14,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class WorkoutEntryResponse {
+    private long id;
     private String workoutName;
     private String workoutDescription;
 
