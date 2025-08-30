@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "workout_entries")
@@ -31,11 +32,15 @@ public class WorkoutEntry {
     private Double weight;
     private Integer duration;
 
+    @Column(nullable = false)
+    private LocalDate date;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
     @PrePersist
     protected void onCreate() {
+        date = LocalDate.now();
         createdAt = Instant.now();
     }
 
@@ -50,6 +55,8 @@ public class WorkoutEntry {
             this.setWeight(other.getWeight());
         if (other.getDuration() != null)
             this.setDuration(other.getDuration());
+        if (other.getDate() != null)
+            this.setDate(other.getDate());
 
         return this;
     }

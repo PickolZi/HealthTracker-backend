@@ -1,6 +1,7 @@
 package dev.jamesdsan.backend.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,5 +24,6 @@ public class WorkoutEntryResponse {
     private Double weight;
     private Integer duration;
 
+    private LocalDate date;
     private Instant createdAt;
 }

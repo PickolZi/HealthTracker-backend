@@ -56,6 +56,7 @@ public class WorkoutEntryService {
                             .reps(workoutEntry.getReps())
                             .weight(workoutEntry.getWeight())
                             .duration(workoutEntry.getDuration())
+                            .date(workoutEntry.getDate())
                             .createdAt(workoutEntry.getCreatedAt())
                             .build();
                 })
@@ -86,6 +87,7 @@ public class WorkoutEntryService {
                 .reps(workoutEntry.getReps())
                 .weight(workoutEntry.getWeight())
                 .duration(workoutEntry.getDuration())
+                .date(workoutEntry.getDate())
                 .createdAt(workoutEntry.getCreatedAt())
                 .build();
 
