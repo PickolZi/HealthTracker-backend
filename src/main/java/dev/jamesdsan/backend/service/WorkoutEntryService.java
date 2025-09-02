@@ -1,10 +1,12 @@
 package dev.jamesdsan.backend.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -38,14 +40,23 @@ public class WorkoutEntryService {
     @Autowired
     private final AuthenticatedUserService authenticatedUserService;
 
-    public List<WorkoutEntryResponse> listWorkoutEntriesByUser(long userId) {
+    public List<WorkoutEntryResponse> listWorkoutEntriesByUser(long userId, LocalDate date, Pageable pageable) {
         logger.info("[WorkoutEntryService] listing workouts for user with id: {}", userId);
 
         authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
 
         User user = findUserByIdElseThrowUserNotFoundException(userId);
 
-        List<WorkoutEntryResponse> workoutEntries = workoutEntryRepository.findAllByUser(user)
+        List<WorkoutEntry> fetchedWorkoutEntries = List.of();
+        if (date == null) {
+            logger.info("[WorkoutEntryService] listing all workouts across all dates");
+            fetchedWorkoutEntries = workoutEntryRepository.findAllByUser(user);
+        } else {
+            logger.info("[WorkoutEntryService] listing all workouts on date: {}", date.toString());
+            fetchedWorkoutEntries = workoutEntryRepository.findAllByUserAndDate(user, date, pageable);
+        }
+
+        List<WorkoutEntryResponse> workoutEntries = fetchedWorkoutEntries
                 .stream()
                 .map(workoutEntry -> {
                     return WorkoutEntryResponse.builder()
