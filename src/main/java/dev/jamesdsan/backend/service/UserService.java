@@ -66,6 +66,21 @@ public class UserService {
         return userResponse;
     }
 
+    public long getUserIdByEmail(String email) throws UserNotFoundException {
+        logger.info("[UserService] fetching user with email: {}", email);
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            logger.error("[UserService] failed to find user with email: {}", email);
+            throw new UserNotFoundException(email);
+        }
+
+        logger.info("[UserService] successfully found user's id: {}", user.getId());
+
+        return user.getId();
+    }
+
     public void createUser(User user) {
         logger.info("[UserService] creating user with username: {}", user.getUsername());
 
