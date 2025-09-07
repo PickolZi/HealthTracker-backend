@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         logger.info("[JwtAuthenticationFilter] checking securityContextHolder {}", SecurityContextHolder.getContext());
 
-        String jwt = fetchJwtTokenElseNull(request);
+        String jwt = fetchJwtTokenThroughAuthHeaderElseNull(request);
 
         if (jwt != null && jwtUtil.isTokenValid(jwt)) {
             setSecurityContextHolderAuthentication(jwt);
@@ -52,13 +53,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private String fetchJwtTokenThroughAuthHeaderElseNull(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        logger.info("[JwtAuthenticationFilter] reading authHeader: {}", authHeader);
+
+        if (Strings.isNotBlank(authHeader) && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            logger.info("[JwtAuthenticationFilter] found a jwt: {}", jwt);
+
+            return jwt;
+        } else {
+            logger.info("[JwtAuthenticationFilter] failed to find a JWT token from the header");
+            return null;
+        }
+
+    }
+
+    @Deprecated
     private String fetchJwtTokenElseNull(HttpServletRequest request) {
+        // Instead of reading JWT from cookie, I will be reading it from auth header
         String jwt = null;
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("jwt".equals(cookie.getName())) {
                     jwt = cookie.getValue();
-                    logger.info("[JwtAuthenticationFilter] found a valid jwt: {}", jwt);
+                    logger.info("[JwtAuthenticationFilter] found a jwt: {}", jwt);
                 }
             }
         }
