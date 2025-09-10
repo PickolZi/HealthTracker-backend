@@ -107,7 +107,7 @@ public class WorkoutEntryService {
         return workoutEntryResponse;
     }
 
-    public void createWorkoutEntry(long userId, long workoutId, WorkoutEntry workoutEntry) {
+    public WorkoutEntryResponse createWorkoutEntry(long userId, long workoutId, WorkoutEntry workoutEntry) {
         logger.info("[WorkoutEntryService] creating workout entry for workout id: {} for user with id: {}", workoutId,
                 userId);
 
@@ -125,6 +125,20 @@ public class WorkoutEntryService {
             logger.info(
                     "[WorkoutEntryService] successfully created workout entry with id: {} for workout: {} for user with id: {}",
                     createdWorkoutEntry.getId(), workout.getName(), user.getId());
+
+            WorkoutEntryResponse workoutEntryResponse = WorkoutEntryResponse.builder()
+                    .id(createdWorkoutEntry.getId())
+                    .workoutName(createdWorkoutEntry.getWorkout().getName())
+                    .workoutDescription(createdWorkoutEntry.getWorkout().getDescription())
+                    .sets(createdWorkoutEntry.getSets())
+                    .reps(createdWorkoutEntry.getReps())
+                    .weight(createdWorkoutEntry.getWeight())
+                    .duration(createdWorkoutEntry.getDuration())
+                    .date(createdWorkoutEntry.getDate())
+                    .createdAt(createdWorkoutEntry.getCreatedAt())
+                    .build();
+
+            return workoutEntryResponse;
         } catch (Exception exc) {
             logger.error("[WorkoutEntryService] failed to create workout entry for workout: {} for user with id: {}",
                     workout.getName(), user.getId());
@@ -132,7 +146,8 @@ public class WorkoutEntryService {
         }
     }
 
-    public void updateWorkoutEntry(long userId, long workoutId, long workoutEntryId, WorkoutEntry workoutEntry) {
+    public WorkoutEntryResponse updateWorkoutEntry(long userId, long workoutId, long workoutEntryId,
+            WorkoutEntry workoutEntry) {
         logger.info("[WorkoutEntryService] updating workout entry");
 
         authenticatedUserService.isUserAuthorizedElseThrowAccessDeniedException(userId);
@@ -159,6 +174,20 @@ public class WorkoutEntryService {
             logger.info(
                     "[WorkoutEntryService] successfully updated workout entry with id: {} for workout: {} for user with id: {}",
                     updatedWorkoutEntry.getId(), updatedWorkoutEntry.getWorkout().getName(), user.getId());
+
+            WorkoutEntryResponse workoutEntryResponse = WorkoutEntryResponse.builder()
+                    .id(updatedWorkoutEntry.getId())
+                    .workoutName(updatedWorkoutEntry.getWorkout().getName())
+                    .workoutDescription(updatedWorkoutEntry.getWorkout().getDescription())
+                    .sets(updatedWorkoutEntry.getSets())
+                    .reps(updatedWorkoutEntry.getReps())
+                    .weight(updatedWorkoutEntry.getWeight())
+                    .duration(updatedWorkoutEntry.getDuration())
+                    .date(updatedWorkoutEntry.getDate())
+                    .createdAt(updatedWorkoutEntry.getCreatedAt())
+                    .build();
+
+            return workoutEntryResponse;
         } catch (Exception exc) {
             logger.error("[WorkoutEntryService] failed to update workout entry for workout: {} for user with id: {}",
                     workout.getName(), user.getId());
