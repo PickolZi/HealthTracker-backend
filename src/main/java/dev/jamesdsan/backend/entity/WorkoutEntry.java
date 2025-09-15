@@ -6,6 +6,8 @@ import lombok.*;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import org.apache.logging.log4j.util.Strings;
+
 @Entity
 @Table(name = "workout_entries")
 @Getter
@@ -40,7 +42,9 @@ public class WorkoutEntry {
 
     @PrePersist
     protected void onCreate() {
-        date = LocalDate.now();
+        if (date == null) {
+            date = LocalDate.now();
+        }
         createdAt = Instant.now();
     }
 
