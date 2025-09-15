@@ -234,11 +234,11 @@ public class WorkoutEntryService {
                     workoutEntry.getId());
             throw new ValidationException("Can not create new workout entry when reps are less than or equal to 0");
         }
-        if (workoutEntry.getWeight() == null || workoutEntry.getWeight() <= 0) {
+        if (workoutEntry.getWeight() == null || workoutEntry.getWeight() < 0) {
             logger.error(
-                    "[WorkoutEntryService] failed to update workout entry with id: {} because weight are less than or equal to 0",
+                    "[WorkoutEntryService] failed to update workout entry with id: {} because weight is less than 0",
                     workoutEntry.getId());
-            throw new ValidationException("Can not create new workout entry when weight are less than or equal to 0");
+            throw new ValidationException("Can not create new workout entry when weight is less than 0");
         }
         if (workoutEntry.getDuration() == null || workoutEntry.getDuration() < 0) {
             logger.error(
