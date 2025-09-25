@@ -16,6 +16,7 @@ import lombok.Setter;
 @Builder
 public class WorkoutEntryResponse {
     private long id;
+    private long workoutId;
     private String workoutName;
     private String workoutDescription;
 

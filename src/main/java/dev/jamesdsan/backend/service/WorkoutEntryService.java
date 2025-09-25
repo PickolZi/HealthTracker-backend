@@ -61,6 +61,7 @@ public class WorkoutEntryService {
                 .map(workoutEntry -> {
                     return WorkoutEntryResponse.builder()
                             .id(workoutEntry.getId())
+                            .workoutId(workoutEntry.getWorkout().getId())
                             .workoutName(workoutEntry.getWorkout().getName())
                             .workoutDescription(workoutEntry.getWorkout().getDescription())
                             .sets(workoutEntry.getSets())
@@ -92,6 +93,7 @@ public class WorkoutEntryService {
 
         WorkoutEntryResponse workoutEntryResponse = WorkoutEntryResponse.builder()
                 .id(workoutEntry.getId())
+                .workoutId(workoutEntry.getWorkout().getId())
                 .workoutName(workoutEntry.getWorkout().getName())
                 .workoutDescription(workoutEntry.getWorkout().getDescription())
                 .sets(workoutEntry.getSets())
@@ -128,6 +130,7 @@ public class WorkoutEntryService {
 
             WorkoutEntryResponse workoutEntryResponse = WorkoutEntryResponse.builder()
                     .id(createdWorkoutEntry.getId())
+                    .workoutId(createdWorkoutEntry.getWorkout().getId())
                     .workoutName(createdWorkoutEntry.getWorkout().getName())
                     .workoutDescription(createdWorkoutEntry.getWorkout().getDescription())
                     .sets(createdWorkoutEntry.getSets())
@@ -177,6 +180,7 @@ public class WorkoutEntryService {
 
             WorkoutEntryResponse workoutEntryResponse = WorkoutEntryResponse.builder()
                     .id(updatedWorkoutEntry.getId())
+                    .workoutId(updatedWorkoutEntry.getWorkout().getId())
                     .workoutName(updatedWorkoutEntry.getWorkout().getName())
                     .workoutDescription(updatedWorkoutEntry.getWorkout().getDescription())
                     .sets(updatedWorkoutEntry.getSets())
